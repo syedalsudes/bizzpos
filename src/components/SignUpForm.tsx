@@ -1,0 +1,124 @@
+"use client";
+
+import { useState } from "react";
+import { supabase } from "@/lib/supabaseClient";
+import { useRouter } from "next/navigation";
+import { User, Mail, Lock, ArrowRight, Sparkles } from "lucide-react";
+import Link from "next/link";
+
+const SignupPage = () => {
+  const router = useRouter();
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleSignup = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: { full_name: name },
+      },
+    });
+
+    setLoading(false);
+    if (error) return alert(error.message);
+
+    alert("Check email for verification.");
+    router.push("/login");
+  };
+
+  const handleGoogle = async () => {
+    await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo: `${location.origin}/` },
+    });
+  };
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-[#FBF9F6] p-6">
+      {/* Subtle Background Pattern */}
+      <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#000 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+
+      <div className="w-full max-w-md relative z-10 bg-white p-8 lg:p-12 rounded-[2.5rem] shadow-sm border border-stone-100">
+        
+        {/* Top Icon/Badge */}
+        <div className="flex justify-center mb-6">
+          <div className="w-12 h-12 rounded-2xl bg-amber-500/10 flex items-center justify-center text-amber-600">
+            <Sparkles size={24} />
+          </div>
+        </div>
+
+        <div className="text-center mb-10">
+          <h2 className="text-3xl font-black text-stone-900 tracking-tight mb-2">Create Merchant ID</h2>
+          <p className="text-stone-500 text-sm font-medium">Step into a world of seamless financial management.</p>
+        </div>
+
+        {/* Google Signup */}
+        <button 
+          type="button" 
+          onClick={handleGoogle} 
+          className="group w-full flex items-center justify-center gap-3 px-4 py-3.5 bg-white border border-stone-200 rounded-2xl font-bold text-stone-700 hover:border-stone-900 hover:shadow-xl hover:shadow-stone-100 transition-all duration-300"
+        >
+          <svg className="w-5 h-5 group-hover:scale-110 transition-transform" viewBox="0 0 24 24">
+            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
+            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+          </svg>
+          Continue with Google
+        </button>
+
+        <div className="relative my-8">
+          <div className="absolute inset-0 flex items-center"><span className="w-full border-t border-stone-100"></span></div>
+          <div className="relative flex justify-center text-[10px] uppercase font-black tracking-[0.3em] text-stone-300"><span className="bg-white px-6">Direct Access</span></div>
+        </div>
+
+        <form onSubmit={handleSignup} className="space-y-4">
+          <div className="space-y-4">
+            {[
+              { label: "Business Owner Name", icon: <User size={18} />, type: "text", value: name, setter: setName },
+              { label: "Email Address", icon: <Mail size={18} />, type: "email", value: email, setter: setEmail },
+              { label: "Security Password", icon: <Lock size={18} />, type: "password", value: password, setter: setPassword }
+            ].map((field, idx) => (
+              <div key={idx} className="relative group">
+                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400 group-focus-within:text-amber-600 transition-colors">
+                  {field.icon}
+                </div>
+                <input
+                  type={field.type}
+                  placeholder={field.label}
+                  required
+                  value={field.value}
+                  onChange={(e) => field.setter(e.target.value)}
+                  className="w-full pl-12 pr-6 py-4 bg-stone-50 border border-stone-100 rounded-2xl focus:bg-white focus:border-amber-500 focus:ring-4 focus:ring-amber-500/5 outline-none transition-all font-semibold text-stone-900 placeholder:text-stone-400"
+                />
+              </div>
+            ))}
+          </div>
+
+          <button 
+            disabled={loading}
+            className="w-full py-4 bg-stone-900 text-white rounded-2xl font-black text-lg hover:bg-amber-600 transition-all duration-500 flex items-center justify-center gap-3 mt-6 shadow-xl shadow-stone-200 disabled:opacity-50 active:scale-[0.98]"
+          >
+            {loading ? "Verifying..." : "Establish Account"} 
+            <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+          </button>
+        </form>
+
+        <p className="mt-8 text-center text-stone-500 font-bold text-xs tracking-wide">
+          PART OF THE NETWORK?{" "}
+          <Link href="/login" className="text-amber-700 hover:text-amber-600 transition-colors underline decoration-amber-200 underline-offset-4">
+            AUTHORIZED SIGN IN
+          </Link>
+        </p>
+      </div>
+    </div>
+  );
+};
+
+export default SignupPage;
