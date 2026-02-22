@@ -70,13 +70,12 @@ const Navbar = () => {
 
         {/* Logo Section */}
         <Link href="/" className="flex items-center gap-3 group transition-transform active:scale-95">
-          <div className="h-12 overflow-hidden rounded-xl bg-slate-100 border border-slate-200 shadow-sm">
-            {/* LOGO IMAGE HERE */}
+          <div className="h-12 overflow-hidden rounded-xl bg-white border border-stone-200 shadow-sm">
             <img
               src="/logo.png"
               alt="Logo"
               className="w-full h-full object-cover"
-              onError={(e) => (e.currentTarget.src = "https://ui-avatars.com/api/?name=M&background=0ea5e9&color=fff")}
+              onError={(e) => (e.currentTarget.src = "https://ui-avatars.com/api/?name=M&background=8B3DA5&color=fff")}
             />
           </div>
         </Link>
@@ -87,13 +86,13 @@ const Navbar = () => {
             <div className="flex items-center gap-3">
               <Link
                 href="/login"
-                className="px-5 py-2.5 text-sm font-bold text-stone-600 hover:text-amber-700 transition-colors"
+                className="px-5 py-2.5 text-sm font-bold text-stone-600 hover:text-[#8B3DA5] transition-colors"
               >
                 Sign In
               </Link>
               <Link
                 href="/signup"
-                className="px-6 py-2.5 rounded-full bg-stone-900 text-white text-sm font-bold hover:bg-amber-600 hover:shadow-[0_10px_20px_rgba(217,119,6,0.3)] transition-all active:scale-95"
+                className="px-6 py-2.5 rounded-full bg-stone-900 text-white text-sm font-bold hover:bg-[#8B3DA5] hover:shadow-[0_10px_20px_rgba(139,61,165,0.3)] transition-all active:scale-95"
               >
                 Get Started
               </Link>
@@ -104,8 +103,8 @@ const Navbar = () => {
                 <button
                   onClick={() => setIsOpen(!isOpen)}
                   className={`flex items-center gap-2 pl-1.5 pr-3 py-1.5 rounded-full border transition-all duration-500 ${isOpen
-                    ? "bg-stone-900 border-stone-900 shadow-xl"
-                    : "bg-white border-stone-200 hover:border-amber-400 hover:shadow-md"
+                    ? "bg-stone-950 border-stone-950 shadow-xl"
+                    : "bg-white border-stone-200 hover:border-[#8B3DA5] hover:shadow-md"
                     }`}
                 >
                   <div className="relative">
@@ -117,7 +116,7 @@ const Navbar = () => {
                         referrerPolicy="no-referrer"
                       />
                     ) : (
-                      <div className="w-8 h-8 flex items-center justify-center rounded-full bg-gradient-to-tr from-amber-500 to-amber-600 text-stone-950 text-[10px] font-black shadow-inner">
+                      <div className="w-8 h-8 flex items-center justify-center rounded-full bg-gradient-to-tr from-[#8B3DA5] to-[#AA6ABD] text-white text-[10px] font-black shadow-inner">
                         {getInitial()}
                       </div>
                     )}
@@ -125,22 +124,22 @@ const Navbar = () => {
                   </div>
                   <ChevronDown
                     size={14}
-                    className={`transition-transform duration-500 ${isOpen ? 'rotate-180 text-amber-400' : 'text-stone-400'}`}
+                    className={`transition-transform duration-500 ${isOpen ? 'rotate-180 text-[#C08FD0]' : 'text-stone-400'}`}
                   />
                 </button>
 
                 {/* --- PREMIUM DROPDOWN --- */}
                 {isOpen && (
-                  <div className="absolute right-0 mt-4 w-80 bg-white rounded-[2rem] shadow-[0_30px_70px_rgba(0,0,0,0.15)] border border-stone-100 overflow-hidden animate-in fade-in slide-in-from-top-4 duration-300 origin-top-right z-50">
+                  <div className="absolute right-0 mt-4 w-80 bg-white rounded-[2rem] shadow-[0_30px_70px_rgba(139,61,165,0.15)] border border-stone-100 overflow-hidden animate-in fade-in slide-in-from-top-4 duration-300 origin-top-right z-50">
 
                     {/* Profile Header */}
-                    <div className="p-6 bg-gradient-to-br from-stone-900 to-stone-800">
+                    <div className="p-6 bg-gradient-to-br from-stone-950 to-stone-800">
                       <div className="flex items-center gap-4">
                         <div className="relative">
                           {avatarUrl ? (
                             <img src={avatarUrl} className="w-14 h-14 rounded-2xl border-2 border-white/20 object-cover" alt="Profile" />
                           ) : (
-                            <div className="w-14 h-14 flex items-center justify-center rounded-2xl bg-amber-500 text-stone-900 font-black text-xl shadow-lg">
+                            <div className="w-14 h-14 flex items-center justify-center rounded-2xl bg-[#8B3DA5] text-white font-black text-xl shadow-lg">
                               {getInitial()}
                             </div>
                           )}
@@ -170,15 +169,17 @@ const Navbar = () => {
                         label="New Application"
                         onClick={() => setIsOpen(false)}
                       />
+                      
+                      {/* Logic for isAdmin exactly as before */}
                       {isAdmin && (
                         <div className="mt-2 pt-2 border-t border-stone-100">
                           <p className="px-4 py-2 text-[10px] font-black uppercase tracking-widest text-stone-400">Administration</p>
                           <Link
                             href="/admin/dashboard"
                             onClick={() => setIsOpen(false)}
-                            className="flex items-center gap-3 px-4 py-3 text-sm font-bold text-amber-700 hover:bg-amber-50 rounded-2xl transition-all group"
+                            className="flex items-center gap-3 px-4 py-3 text-sm font-bold text-[#8B3DA5] hover:bg-[#8B3DA5]/5 rounded-2xl transition-all group"
                           >
-                            <div className="p-1.5 bg-amber-100 rounded-xl group-hover:bg-amber-200 transition-colors">
+                            <div className="p-1.5 bg-[#8B3DA5]/10 rounded-xl group-hover:bg-[#8B3DA5]/20 transition-colors text-[#8B3DA5]">
                               <ShieldCheck size={18} />
                             </div>
                             Management Portal
@@ -210,14 +211,14 @@ const Navbar = () => {
   );
 };
 
-// --- Updated Dropdown Link Component ---
+// --- Dropdown Link Component updated with Purple Hover ---
 const DropdownLink = ({ href, icon, label, onClick }: any) => (
   <Link
     href={href}
     onClick={onClick}
     className="flex items-center gap-3 px-4 py-3 text-sm font-bold text-stone-600 hover:bg-stone-50 hover:text-stone-900 rounded-2xl transition-all group"
   >
-    <div className="p-1.5 text-stone-400 group-hover:text-amber-600 group-hover:bg-amber-50 rounded-xl transition-all">
+    <div className="p-1.5 text-stone-400 group-hover:text-[#8B3DA5] group-hover:bg-[#8B3DA5]/10 rounded-xl transition-all">
       {icon}
     </div>
     {label}

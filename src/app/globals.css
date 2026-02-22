@@ -3,26 +3,23 @@
 @tailwind utilities;
 
 :root {
-  /* Premium Amber Scale (Gold/Bronze) */
-  --brand-50: #fffbeb;
-  --brand-100: #fef3c7;
-  --brand-200: #fde68a;
-  --brand-300: #fcd34d;
-  --brand-400: #fbbf24;
-  --brand-500: #f59e0b;
-  --brand-600: #d97706;
-  --brand-700: #b45309;
-  --brand-800: #92400e;
-  --brand-950: #451a03;
+  --brand-50: #fdf8ff;
+  --brand-100: #f7ebff;
+  --brand-200: #f0d6ff;
+  --brand-300: #e3b5ff;
+  --brand-400: #ce85ff;
+  --brand-500: #b14dff;
+  --brand-600: #8B3DA5;
+  --brand-700: #743289;
+  --brand-800: #5f2a70;
+  --brand-950: #2d1036;
 
-  /* Modern Stone & Paper Formats */
-  --background: 251, 249, 246; /* Warm Paper Background (#FBF9F6) */
-  --foreground: 28, 25, 23;    /* Deep Stone Text (#1C1917) */
-  --border: 231, 229, 228;     /* Stone-200 */
-  --brand-primary: 217, 119, 6; /* Amber-600 */
+  --background: 255, 255, 255; 
+  --foreground: 28, 25, 23;   
+  --border: 231, 229, 228;     
+  --brand-primary: 139, 61, 165; 
 }
 
-/* Global Border Fix */
 * {
   border-color: rgb(var(--border));
 }
@@ -37,7 +34,6 @@ body {
   @apply font-sans antialiased;
 }
 
-/* Typography Fix */
 h1, h2, h3, h4, h5, h6 {
   @apply font-black tracking-tighter;
   color: rgb(var(--foreground));
@@ -45,22 +41,19 @@ h1, h2, h3, h4, h5, h6 {
 
 p {
   @apply text-base leading-relaxed;
-  color: #57534e; /* text-stone-600 for better readability */
+  color: #57534e;
 }
 
-/* --- Selection Color Fix (Ab text gayab nahi hoga) --- */
 ::selection {
-  background-color: #1c1917; /* Deep Stone background */
-  color: #fbbf24;            /* Amber-400 (Golden) text */
+  background-color: #8B3DA5;
+  color: #ffffff;            
 }
 
-/* For Firefox */
 ::-moz-selection {
-  background-color: #1c1917;
-  color: #fbbf24;
+  background-color: #8B3DA5;
+  color: #ffffff;
 }
 
-/* Buttons & Interactive Elements */
 button {
   @apply transition-all duration-300 ease-in-out active:scale-95;
 }
@@ -69,7 +62,6 @@ a {
   @apply transition-all duration-200;
 }
 
-/* Premium Scrollbar */
 ::-webkit-scrollbar {
   @apply w-1.5;
 }
@@ -79,18 +71,21 @@ a {
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-stone-300 rounded-full transition-colors;
+  @apply bg-stone-200 rounded-full transition-colors;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  @apply bg-amber-600/50;
+  @apply bg-[#8B3DA5]/40;
 }
 
-/* Custom Premium Utilities */
 .brand-gradient {
-  background: linear-gradient(135deg, #fbbf24, #d97706);
+  background: linear-gradient(135deg, #8B3DA5, #6b2e7f);
 }
 
 .glass-card {
-  @apply bg-white/70 backdrop-blur-xl border border-white/20 shadow-xl shadow-stone-200/50;
+  @apply bg-white/70 backdrop-blur-xl border border-white/20 shadow-xl shadow-[#8B3DA5]/5;
+}
+
+.focus-ring-brand {
+  @apply focus:ring-4 focus:ring-[#8B3DA5]/10 focus:border-[#8B3DA5] outline-none transition-all;
 }

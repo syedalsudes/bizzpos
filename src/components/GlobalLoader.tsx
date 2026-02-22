@@ -26,10 +26,13 @@ export default function GlobalLoader() {
             opacity: 0,
             transition: { duration: 0.8, ease: [0.43, 0.13, 0.23, 0.96] } 
           }}
-          className="fixed inset-0 z-[9999] bg-[#FBF9F6] flex flex-col items-center justify-center selection:bg-transparent"
+          className="fixed inset-0 z-[9999] bg-white flex flex-col items-center justify-center selection:bg-transparent"
         >
+          {/* Subtle background pattern to match the theme */}
+          <div className="absolute inset-0 opacity-[0.02] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#8B3DA5 1px, transparent 1px)', backgroundSize: '30px 30px' }} />
+
           {/* Brand Animation */}
-          <div className="flex items-baseline mb-10">
+          <div className="flex items-baseline mb-10 relative z-10">
             {letters.map((letter, i) => (
               <motion.span
                 key={i}
@@ -42,8 +45,8 @@ export default function GlobalLoader() {
                 }}
                 className={`text-4xl sm:text-6xl font-black tracking-tighter ${
                   letter === "P" || letter === "O" || letter === "S" 
-                  ? "text-amber-600" // POS highlight
-                  : "text-stone-900" // Bizz part
+                  ? "text-[#8B3DA5]" 
+                  : "text-stone-900" 
                 }`}
               >
                 {letter}
@@ -52,8 +55,8 @@ export default function GlobalLoader() {
           </div>
 
           {/* Minimalist Progress Container */}
-          <div className="relative w-48 sm:w-64 h-[2px] bg-stone-200 rounded-full overflow-hidden">
-            {/* Moving Light/Glow Effect */}
+          <div className="relative w-48 sm:w-64 h-[2px] bg-stone-100 rounded-full overflow-hidden relative z-10">
+            {/* Moving Light/Glow Effect - Now Purple */}
             <motion.div
               initial={{ left: "-100%" }}
               animate={{ left: "100%" }}
@@ -62,21 +65,9 @@ export default function GlobalLoader() {
                 duration: 1.5, 
                 ease: "linear" 
               }}
-              className="absolute top-0 w-20 h-full bg-gradient-to-r from-transparent via-amber-400 to-transparent opacity-50"
+              className="absolute top-0 w-24 h-full bg-gradient-to-r from-transparent via-[#8B3DA5]/40 to-transparent"
             />
-            
-            
           </div>
-
-          {/* Loading Indicator Text */}
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: [0, 1, 0] }}
-            transition={{ delay: 0.5, repeat: Infinity, duration: 2 }}
-            className="mt-6 text-[9px] font-black uppercase tracking-[0.5em] text-stone-700"
-          >
-            Initializing Secure Terminal
-          </motion.p>
         </motion.div>
       )}
     </AnimatePresence>

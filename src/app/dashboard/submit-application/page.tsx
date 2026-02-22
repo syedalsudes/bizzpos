@@ -28,7 +28,6 @@ export default function SubmitApplicationPage() {
     checkAuth();
   }, [router]);
 
-  // YE HAI ASLI LOGIC JO DATA SAVE KAREGA
   const handleFinalSubmit = async (mappedData: any, uploadedFiles: any) => {
     try {
       setSubmitting(true);

@@ -20,6 +20,11 @@ export const metadata: Metadata = {
   title: "MerchantApp - Secure Document Verification Platform",
   description:
     "Streamline your merchant application with secure document submission, real-time status tracking, and enterprise-grade security. PCI-DSS compliant.",
+  icons: {
+    icon: "/favicon.svg",
+    shortcut: "/favicon.svg",
+    apple: "/favicon.svg",
+  },
 };
 
 export const viewport: Viewport = {

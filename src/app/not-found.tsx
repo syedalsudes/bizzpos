@@ -25,7 +25,7 @@ export default function NotFound() {
           initial={{ y: 15, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.2, duration: 0.5 }}
-          className="text-lg md:text-xl mt-4 font-black uppercase tracking-[0.3em] text-amber-600"
+          className="text-lg md:text-xl mt-4 font-black uppercase tracking-[0.3em] text-[#8B3DA5]"
         >
           Page Not Found
         </motion.p>
@@ -40,7 +40,6 @@ export default function NotFound() {
           The page you are looking for has been moved <br className="hidden md:block" /> or doesn't exist in our protocols.
         </motion.p>
 
-        {/* Back Button Container - w-full aur flex justify-center se alignment control ki hai */}
         <motion.div
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
@@ -49,7 +48,7 @@ export default function NotFound() {
         >
           <Link
             href="/"
-            className="group inline-flex items-center justify-center px-10 py-5 rounded-full bg-stone-900 text-white font-black text-[11px] uppercase tracking-widest hover:bg-amber-600 transition-all shadow-xl shadow-stone-200"
+            className="group inline-flex items-center justify-center px-10 py-5 rounded-full bg-stone-900 text-white font-black text-[11px] uppercase tracking-widest hover:bg-[#8B3DA5] transition-all shadow-xl shadow-stone-200"
           >
             <ArrowLeft className="w-4 h-4 mr-3 group-hover:-translate-x-1 transition-transform" />
             Go Back Home
