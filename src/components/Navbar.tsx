@@ -70,11 +70,11 @@ const Navbar = () => {
 
         {/* Logo Section */}
         <Link href="/" className="flex items-center gap-3 group transition-transform active:scale-95">
-          <div className="h-12 overflow-hidden rounded-xl bg-white border border-stone-200 shadow-sm">
+          <div className="h-10 md:h-12 overflow-hidden rounded-xl bg-white border border-stone-200 shadow-sm">
             <img
               src="/logo.png"
               alt="Logo"
-              className="w-full h-full object-cover"
+              className="w-auto h-full object-contain md:object-cover"
               onError={(e) => (e.currentTarget.src = "https://ui-avatars.com/api/?name=M&background=8B3DA5&color=fff")}
             />
           </div>
@@ -86,13 +86,13 @@ const Navbar = () => {
             <div className="flex items-center gap-3">
               <Link
                 href="/login"
-                className="px-5 py-2.5 text-sm font-bold text-stone-600 hover:text-[#8B3DA5] transition-colors"
+                className="hidden md:block px-5 py-2.5 text-sm font-bold text-stone-600 hover:text-[#8B3DA5] transition-colors"
               >
                 Sign In
               </Link>
               <Link
                 href="/signup"
-                className="px-6 py-2.5 rounded-full bg-stone-900 text-white text-sm font-bold hover:bg-[#8B3DA5] hover:shadow-[0_10px_20px_rgba(139,61,165,0.3)] transition-all active:scale-95"
+                className="px-4 md:px-6 py-2 md:py-2.5 rounded-full bg-stone-900 text-white text-xs md:text-sm font-bold hover:bg-[#8B3DA5] transition-all whitespace-nowrap"
               >
                 Get Started
               </Link>
@@ -169,7 +169,7 @@ const Navbar = () => {
                         label="New Application"
                         onClick={() => setIsOpen(false)}
                       />
-                      
+
                       {/* Logic for isAdmin exactly as before */}
                       {isAdmin && (
                         <div className="mt-2 pt-2 border-t border-stone-100">
@@ -197,7 +197,7 @@ const Navbar = () => {
                         <div className="p-1.5 bg-white border border-rose-100 rounded-xl group-hover:scale-110 transition-transform">
                           <LogOut size={18} />
                         </div>
-                        Secure Sign Out
+                        Sign Out
                       </button>
                     </div>
                   </div>
