@@ -102,7 +102,7 @@ const Navbar = () => {
             <img
               src="/logo.png"
               alt="Logo"
-              className="w-auto h-full object-contain md:object-cover"
+              className="w-auto h-full object-contain md:object-cover select-none pointer-events-none"
               onError={(e) => (e.currentTarget.src = "https://ui-avatars.com/api/?name=M&background=8B3DA5&color=fff")}
             />
           </div>

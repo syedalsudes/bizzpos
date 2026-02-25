@@ -15,7 +15,7 @@ export default function Footer() {
                             <img
                                 src="/logo.png"
                                 alt="MerchantPro Elite Logo"
-                                className="object-contain"
+                                className="object-contain select-none pointer-events-none"
                             />
                         </div>
                         <p className="text-stone-600 text-xs font-medium leading-relaxed max-w-xs">

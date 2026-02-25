@@ -6,26 +6,32 @@ import { supabase } from "@/lib/supabaseClient";
 import { useRouter } from "next/navigation";
 import { 
   ShieldCheck, FileText, X, ExternalLink, 
-  Star, ChevronRight, Inbox, Search
+  Star, ChevronRight, Inbox, Search, CheckCircle2
 } from "lucide-react";
 import PremiumLoader from "@/components/PremiumLoader";
 
+// 1. Updated Interface to match your Form Data
 interface MerchantApplication {
   id: string;
-  business_name: string;
+  user_id: string;
+  business_name: string; 
   dba_name: string;
-  email: string;
-  status: 'pending' | 'approved' | 'rejected';
-  created_at: string;
+  business_phone: string;
+  business_website: string;
+  business_address: string;
+  shipping_address: string;
+  tax_id: string;
   owner_first_name: string;
   owner_last_name: string;
-  tax_id: string;
-  business_website: string;
-  business_phone: string;
+  personal_phone: string;
+  email: string;
   ssn: string;
   drivers_license_url?: string;
   business_license_url?: string;
   void_check_url?: string;
+  additional_doc_url?: string;
+  status: 'pending' | 'approved' | 'rejected';
+  created_at: string;
 }
 
 export default function AdminDashboard() {
@@ -48,8 +54,14 @@ export default function AdminDashboard() {
     setDataLoading(false);
   };
 
+  // Admin Check Logic (Using DB instead of ENV)
   useEffect(() => {
+    if (!user && !loading) {
+        router.replace("/login");
+        return;
+    }
     if (!user) return;
+
     const checkAdminAndLoad = async () => {
       const { data: admin } = await supabase
         .from("admin_users")
@@ -64,7 +76,7 @@ export default function AdminDashboard() {
       await fetchApps();
     };
     checkAdminAndLoad();
-  }, [user, router]);
+  }, [user, loading, router]);
 
   const updateStatus = async (id: string, newStatus: MerchantApplication['status']) => {
     const { error } = await supabase
@@ -139,7 +151,7 @@ export default function AdminDashboard() {
                             {app.owner_first_name?.[0]}{app.owner_last_name?.[0]}
                           </div>
                           <div>
-                            <p className="font-bold text-stone-900 text-base leading-tight">{app.business_name || app.dba_name}</p>
+                            <p className="font-bold text-stone-900 text-base leading-tight">{app.dba_name || app.business_name}</p>
                             <p className="text-xs text-stone-400 font-medium">{app.email}</p>
                           </div>
                         </div>
@@ -163,7 +175,6 @@ export default function AdminDashboard() {
                     </tr>
                   ))
                 ) : (
-                  /* Clean Empty State within Table */
                   <tr>
                     <td colSpan={4} className="px-10 py-32 text-center">
                       <div className="flex flex-col items-center justify-center">
@@ -185,16 +196,16 @@ export default function AdminDashboard() {
       {/* Detail Modal - Clean Slide-up/Fade */}
       {selectedApp && (
         <div className="fixed inset-0 z-[100] flex items-end md:items-center justify-center p-0 md:p-6 bg-stone-950/40 backdrop-blur-md animate-in fade-in duration-300">
-          <div className="bg-white w-full max-w-5xl h-[90vh] md:h-auto md:max-h-[90vh] rounded-t-[3rem] md:rounded-[3rem] shadow-2xl overflow-hidden flex flex-col border border-stone-200 relative animate-in slide-in-from-bottom-10 duration-500">
+          <div className="bg-white w-full max-w-5xl h-[95vh] md:h-auto md:max-h-[90vh] rounded-t-[3rem] md:rounded-[3rem] shadow-2xl overflow-hidden flex flex-col border border-stone-200 relative animate-in slide-in-from-bottom-10 duration-500">
             
-            <div className="px-8 py-6 flex items-center justify-between border-b border-stone-100">
+            <div className="px-8 py-6 flex items-center justify-between border-b border-stone-100 bg-white sticky top-0 z-20">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 rounded-2xl bg-[#8B3DA5] flex items-center justify-center text-white shadow-lg">
                   <ShieldCheck size={24} />
                 </div>
                 <div>
-                  <h2 className="text-xl font-black text-stone-900 tracking-tight">{selectedApp.business_name}</h2>
-                  <p className="text-[10px] font-bold text-stone-400 uppercase tracking-widest">Case Review Mode</p>
+                  <h2 className="text-xl font-black text-stone-900 tracking-tight">{selectedApp.dba_name}</h2>
+                  <p className="text-[10px] font-bold text-stone-400 uppercase tracking-widest">Case Review Mode • ID: {selectedApp.id.slice(0,8)}</p>
                 </div>
               </div>
               <button onClick={() => setSelectedApp(null)} className="p-3 hover:bg-stone-100 rounded-full transition-all text-stone-400 hover:text-stone-900">
@@ -205,34 +216,64 @@ export default function AdminDashboard() {
             <div className="flex-1 overflow-y-auto p-8 custom-scrollbar bg-[#fafafa]">
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div className="lg:col-span-2 space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <DetailCard title="Registration Info">
-                      <DetailItem label="Legal Entity" value={selectedApp.business_name} />
-                      <DetailItem label="DBA Name" value={selectedApp.dba_name} />
+                  
+                  {/* Business Details Section */}
+                  <DetailCard title="Business Details">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <DetailItem label="DBA / Business Name" value={selectedApp.dba_name} />
+                      <DetailItem label="Business Phone" value={selectedApp.business_phone} />
                       <DetailItem label="Tax ID / EIN" value={selectedApp.tax_id} />
-                      <DetailItem label="Website" value={selectedApp.business_website} isLink />
-                    </DetailCard>
+                      <DetailItem label="Business Website" value={selectedApp.business_website} isLink />
+                      <div className="md:col-span-2">
+                         <DetailItem label="Business Address" value={selectedApp.business_address} />
+                      </div>
+                      <div className="md:col-span-2">
+                         <DetailItem label="Shipping Address" value={selectedApp.shipping_address || "Same as business address"} />
+                      </div>
+                    </div>
+                  </DetailCard>
 
-                    <DetailCard title="Officer Profile">
-                      <DetailItem label="Full Name" value={`${selectedApp.owner_first_name} ${selectedApp.owner_last_name}`} />
-                      <DetailItem label="Email" value={selectedApp.email} />
-                      <DetailItem label="SSN" value={selectedApp.ssn} />
-                      <DetailItem label="Phone" value={selectedApp.business_phone} />
-                    </DetailCard>
-                  </div>
+                  {/* Personal Details Section */}
+                  <DetailCard title="Owner Profile">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <DetailItem label="First Name" value={selectedApp.owner_first_name} />
+                      <DetailItem label="Last Name" value={selectedApp.owner_last_name} />
+                      <DetailItem label="Email Address" value={selectedApp.email} />
+                      <DetailItem label="Personal Cell" value={selectedApp.personal_phone} />
+                      <div className="md:col-span-2">
+                        <DetailItem label="Social Security Number (SSN)" value={selectedApp.ssn} />
+                      </div>
+                    </div>
+                  </DetailCard>
 
+                  {/* Documents Section */}
                   <div className="bg-white p-8 rounded-[2rem] border border-stone-200">
                      <h4 className="text-[10px] font-black text-[#8B3DA5] uppercase tracking-[0.2em] mb-6">Verification Documents</h4>
-                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
                         <DocLink label="Driver License" url={selectedApp.drivers_license_url} />
                         <DocLink label="Business License" url={selectedApp.business_license_url} />
-                        <DocLink label="Voided Check" url={selectedApp.void_check_url} />
+                        <DocLink label="Void Check" url={selectedApp.void_check_url} />
+                        <DocLink label="Additional" url={selectedApp.additional_doc_url} />
                      </div>
+                  </div>
+
+                  {/* Terms Authorization Note */}
+                  <div className="p-6 rounded-2xl bg-emerald-50 border border-emerald-100 flex gap-4">
+                    <div className="w-10 h-10 rounded-full bg-emerald-500 text-white flex items-center justify-center shrink-0">
+                        <CheckCircle2 size={20} />
+                    </div>
+                    <div>
+                        <p className="text-[10px] font-black text-emerald-800 uppercase tracking-[0.15em]">Legal Authorization</p>
+                        <p className="text-xs text-emerald-700/80 font-medium mt-1 leading-relaxed">
+                          The applicant has authorized Bizz POS to process merchant services as per agreed terms (Lease/Own/Rent/Buyout) by digital submission of this form.
+                        </p>
+                    </div>
                   </div>
                 </div>
 
+                {/* Sticky Decision Sidebar */}
                 <div className="space-y-6">
-                  <div className="bg-stone-950 p-8 rounded-[2.5rem] shadow-xl text-center">
+                  <div className="bg-stone-950 p-8 rounded-[2.5rem] shadow-xl text-center sticky top-0">
                     <h4 className="text-[10px] font-black text-[#C08FD0] mb-6 uppercase tracking-[0.3em]">Decision Center</h4>
                     <div className="space-y-3">
                       {(['pending', 'approved', 'rejected'] as const).map((status) => (
@@ -248,6 +289,11 @@ export default function AdminDashboard() {
                           {status}
                         </button>
                       ))}
+                    </div>
+                    <div className="mt-8 pt-8 border-t border-white/5">
+                        <p className="text-[9px] font-medium text-stone-500 uppercase tracking-widest leading-loose">
+                            Update status to notify the merchant via their dashboard.
+                        </p>
                     </div>
                   </div>
                 </div>
@@ -299,9 +345,9 @@ function DetailItem({ label, value, isLink }: { label: string; value: string; is
   return (
     <div>
       <p className="text-[8px] uppercase font-black text-stone-300 tracking-[0.15em] mb-1">{label}</p>
-      {isLink ? (
-        <a href={value} target="_blank" className="text-xs font-bold text-[#8B3DA5] hover:underline truncate block">
-          {value || 'N/A'}
+      {isLink && value ? (
+        <a href={value.startsWith('http') ? value : `https://${value}`} target="_blank" rel="noreferrer" className="text-xs font-bold text-[#8B3DA5] hover:underline truncate block">
+          {value}
         </a>
       ) : (
         <p className="text-xs font-bold text-stone-800 truncate">{value || 'N/A'}</p>
