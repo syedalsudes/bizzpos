@@ -8,9 +8,7 @@ import {
   ChevronDown,
   FileText,
   ShieldCheck,
-  CreditCard,
-  Settings,
-  Bell
+  LogOut as LogOutIcon, // Renamed for clarity
 } from "lucide-react";
 import { supabase } from "@/lib/supabaseClient";
 
@@ -18,10 +16,9 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false); // DB se admin check karne ke liye state
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const adminEmails = process.env.NEXT_PUBLIC_ADMIN_EMAILS?.split(",") || [];
-  const isAdmin = adminEmails.includes(user?.email);
   const avatarUrl = user?.user_metadata?.avatar_url || user?.user_metadata?.picture;
 
   const getInitial = () => {
@@ -29,17 +26,46 @@ const Navbar = () => {
     return name.charAt(0).toUpperCase();
   };
 
+  // User Auth aur Admin Check logic
   useEffect(() => {
-    const getUser = async () => {
-      const { data } = await supabase.auth.getUser();
-      setUser(data.user);
+    const checkUserAndAdmin = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setUser(user);
+
+      if (user) {
+        // Yahan hum DB se check kar rahe hain
+        const { data: adminData } = await supabase
+          .from('admin_users')
+          .select('user_id')
+          .eq('user_id', user.id)
+          .maybeSingle();
+
+        if (adminData) {
+          setIsAdmin(true);
+        } else {
+          setIsAdmin(false);
+        }
+      }
       setLoading(false);
     };
-    getUser();
+
+    checkUserAndAdmin();
 
     const { data: listener } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        setUser(session?.user ?? null);
+      async (_event, session) => {
+        const currentUser = session?.user ?? null;
+        setUser(currentUser);
+        
+        if (currentUser) {
+          const { data } = await supabase
+            .from('admin_users')
+            .select('user_id')
+            .eq('user_id', currentUser.id)
+            .maybeSingle();
+          setIsAdmin(!!data);
+        } else {
+          setIsAdmin(false);
+        }
         setLoading(false);
       }
     );
@@ -49,6 +75,7 @@ const Navbar = () => {
     };
   }, []);
 
+  // Click outside dropdown logic
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -62,12 +89,13 @@ const Navbar = () => {
   const handleLogout = async () => {
     await supabase.auth.signOut();
     setIsOpen(false);
+    setIsAdmin(false);
   };
 
   return (
     <nav className="fixed top-0 w-full z-[100] bg-white/70 backdrop-blur-xl border-b border-stone-200/60">
       <div className="max-w-7xl mx-auto px-4 md:px-8 h-20 flex items-center justify-between">
-
+        
         {/* Logo Section */}
         <Link href="/" className="flex items-center gap-3 group transition-transform active:scale-95">
           <div className="h-10 md:h-12 overflow-hidden rounded-xl bg-white border border-stone-200 shadow-sm">
@@ -84,93 +112,48 @@ const Navbar = () => {
         <div className="flex items-center gap-6">
           {!user && !loading ? (
             <div className="flex items-center gap-3">
-              <Link
-                href="/login"
-                className="hidden md:block px-5 py-2.5 text-sm font-bold text-stone-600 hover:text-[#8B3DA5] transition-colors"
-              >
-                Sign In
-              </Link>
-              <Link
-                href="/signup"
-                className="px-4 md:px-6 py-2 md:py-2.5 rounded-full bg-stone-900 text-white text-xs md:text-sm font-bold hover:bg-[#8B3DA5] transition-all whitespace-nowrap"
-              >
-                Get Started
-              </Link>
+              <Link href="/login" className="hidden md:block px-5 py-2.5 text-sm font-bold text-stone-600 hover:text-[#8B3DA5] transition-colors">Sign In</Link>
+              <Link href="/signup" className="px-4 md:px-6 py-2 md:py-2.5 rounded-full bg-stone-900 text-white text-xs md:text-sm font-bold hover:bg-[#8B3DA5] transition-all whitespace-nowrap">Get Started</Link>
             </div>
           ) : user ? (
             <div className="flex items-center gap-4">
               <div className="relative" ref={dropdownRef}>
                 <button
                   onClick={() => setIsOpen(!isOpen)}
-                  className={`flex items-center gap-2 pl-1.5 pr-3 py-1.5 rounded-full border transition-all duration-500 ${isOpen
-                    ? "bg-stone-950 border-stone-950 shadow-xl"
-                    : "bg-white border-stone-200 hover:border-[#8B3DA5] hover:shadow-md"
-                    }`}
+                  className={`flex items-center gap-2 pl-1.5 pr-3 py-1.5 rounded-full border transition-all duration-500 ${isOpen ? "bg-stone-950 border-stone-950 shadow-xl" : "bg-white border-stone-200 hover:border-[#8B3DA5] hover:shadow-md"}`}
                 >
                   <div className="relative">
                     {avatarUrl ? (
-                      <img
-                        src={avatarUrl}
-                        alt="User"
-                        className="w-8 h-8 rounded-full object-cover ring-2 ring-white/10"
-                        referrerPolicy="no-referrer"
-                      />
+                      <img src={avatarUrl} alt="User" className="w-8 h-8 rounded-full object-cover ring-2 ring-white/10" referrerPolicy="no-referrer" />
                     ) : (
-                      <div className="w-8 h-8 flex items-center justify-center rounded-full bg-gradient-to-tr from-[#8B3DA5] to-[#AA6ABD] text-white text-[10px] font-black shadow-inner">
-                        {getInitial()}
-                      </div>
+                      <div className="w-8 h-8 flex items-center justify-center rounded-full bg-gradient-to-tr from-[#8B3DA5] to-[#AA6ABD] text-white text-[10px] font-black shadow-inner">{getInitial()}</div>
                     )}
                     <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-500 border-2 border-white rounded-full"></div>
                   </div>
-                  <ChevronDown
-                    size={14}
-                    className={`transition-transform duration-500 ${isOpen ? 'rotate-180 text-[#C08FD0]' : 'text-stone-400'}`}
-                  />
+                  <ChevronDown size={14} className={`transition-transform duration-500 ${isOpen ? 'rotate-180 text-[#C08FD0]' : 'text-stone-400'}`} />
                 </button>
 
-                {/* --- PREMIUM DROPDOWN --- */}
                 {isOpen && (
                   <div className="absolute right-0 mt-4 w-80 bg-white rounded-[2rem] shadow-[0_30px_70px_rgba(139,61,165,0.15)] border border-stone-100 overflow-hidden animate-in fade-in slide-in-from-top-4 duration-300 origin-top-right z-50">
-
-                    {/* Profile Header */}
                     <div className="p-6 bg-gradient-to-br from-stone-950 to-stone-800">
                       <div className="flex items-center gap-4">
-                        <div className="relative">
-                          {avatarUrl ? (
-                            <img src={avatarUrl} className="w-14 h-14 rounded-2xl border-2 border-white/20 object-cover" alt="Profile" />
-                          ) : (
-                            <div className="w-14 h-14 flex items-center justify-center rounded-2xl bg-[#8B3DA5] text-white font-black text-xl shadow-lg">
-                              {getInitial()}
-                            </div>
-                          )}
-                        </div>
+                        {avatarUrl ? (
+                          <img src={avatarUrl} className="w-14 h-14 rounded-2xl border-2 border-white/20 object-cover" alt="Profile" />
+                        ) : (
+                          <div className="w-14 h-14 flex items-center justify-center rounded-2xl bg-[#8B3DA5] text-white font-black text-xl shadow-lg">{getInitial()}</div>
+                        )}
                         <div className="min-w-0">
-                          <p className="text-sm font-black text-white truncate uppercase tracking-tight">
-                            {user.user_metadata?.full_name || 'Premium Merchant'}
-                          </p>
-                          <p className="text-xs text-stone-400 truncate font-medium">
-                            {user.email}
-                          </p>
+                          <p className="text-sm font-black text-white truncate uppercase tracking-tight">{user.user_metadata?.full_name || 'Premium Merchant'}</p>
+                          <p className="text-xs text-stone-400 truncate font-medium">{user.email}</p>
                         </div>
                       </div>
                     </div>
 
-                    {/* Menu Links */}
                     <div className="p-3 grid grid-cols-1 gap-1">
-                      <DropdownLink
-                        href="/dashboard"
-                        icon={<LayoutDashboard size={18} />}
-                        label="Overview"
-                        onClick={() => setIsOpen(false)}
-                      />
-                      <DropdownLink
-                        href="/dashboard/submit-application"
-                        icon={<FileText size={18} />}
-                        label="New Application"
-                        onClick={() => setIsOpen(false)}
-                      />
+                      <DropdownLink href="/dashboard" icon={<LayoutDashboard size={18} />} label="Overview" onClick={() => setIsOpen(false)} />
+                      <DropdownLink href="/dashboard/submit-application" icon={<FileText size={18} />} label="New Application" onClick={() => setIsOpen(false)} />
 
-                      {/* Logic for isAdmin exactly as before */}
+                      {/* --- DATABASE-DRIVEN ADMIN SECTION --- */}
                       {isAdmin && (
                         <div className="mt-2 pt-2 border-t border-stone-100">
                           <p className="px-4 py-2 text-[10px] font-black uppercase tracking-widest text-stone-400">Administration</p>
@@ -188,14 +171,10 @@ const Navbar = () => {
                       )}
                     </div>
 
-                    {/* Footer / Logout */}
                     <div className="p-3 bg-stone-50 border-t border-stone-100">
-                      <button
-                        onClick={handleLogout}
-                        className="w-full flex items-center gap-3 px-4 py-3 text-sm font-bold text-rose-600 hover:bg-rose-100/50 rounded-2xl transition-all group"
-                      >
+                      <button onClick={handleLogout} className="w-full flex items-center gap-3 px-4 py-3 text-sm font-bold text-rose-600 hover:bg-rose-100/50 rounded-2xl transition-all group">
                         <div className="p-1.5 bg-white border border-rose-100 rounded-xl group-hover:scale-110 transition-transform">
-                          <LogOut size={18} />
+                          <LogOutIcon size={18} />
                         </div>
                         Sign Out
                       </button>
@@ -211,7 +190,6 @@ const Navbar = () => {
   );
 };
 
-// --- Dropdown Link Component updated with Purple Hover ---
 const DropdownLink = ({ href, icon, label, onClick }: any) => (
   <Link
     href={href}
